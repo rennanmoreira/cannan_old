@@ -3,7 +3,6 @@ module.exports = {
     'vuetify'
   ],
   pwa: {
-    workboxPluginMode: 'InjectManifest',
     name: 'Cannan',
     themeColor: '#525299',
     msTileColor: '#525299',
