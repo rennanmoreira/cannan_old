@@ -151,9 +151,8 @@
     }),
 
     mounted () {
-      
       const options = {
-        url: 'https://api.clickup.com/api/v2/task/1znyfge',
+        url: 'https://cors-anywhere.herokuapp.com/https://api.clickup.com/api/v2/task/1znyfge',
         method: 'GET',
         headers: {
           Authorization: 'pk_3071231_AK7FZR7XP6KD2YHHEGNXROS8MMDHXL48',
