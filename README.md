@@ -37,6 +37,11 @@ or
 heroku create cannan
 ```
 
+### Add a heroku remote
+```
+heroku git:remote --app cannan
+```
+
 ### Push an deploy on heroku https://cannan.herokuapp.com/
 ```
 git push heroku main
