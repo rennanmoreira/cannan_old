@@ -20,6 +20,8 @@ if (process.env.NODE_ENV === 'production') {
 			console.log('New content is downloading.')
 		},
 		updated() {
+			// TODO: Forçar refresh para sempre garantir versao mais atualizada
+			// Tentar forçar usando o Vue Router
 			console.log('New content is available, please refresh.')
 		},
 		offline() {

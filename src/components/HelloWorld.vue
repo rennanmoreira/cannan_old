@@ -1,5 +1,5 @@
 <template>
-	<v-container>
+	<v-container  class="ml-auto mr-auto">
 		<v-row class="text-center">
 			<v-col cols="12">
 				<v-img
@@ -7,6 +7,7 @@
 					class="my-3"
 					contain
 					height="200"
+					:loading="true"
 				/>
 			</v-col>
 
@@ -15,9 +16,21 @@
 					Welcome to Vuetify
 				</h1>
 
-				<p class="subheading font-weight-regular">
-					For help and collaboration with other Vuetify developers,
-					<br>please join our online
+				<v-sheet
+					color="grey lighten-4"
+					class="pa-3"
+					v-if="currentListLoading"
+				>
+					<v-skeleton-loader
+						class="mx-auto"
+						max-width="300"
+						type="card"
+					></v-skeleton-loader>
+				</v-sheet>
+
+				<p v-else class="subheading font-weight-regular">
+					{{currentList}}
+					<br>
 					<a
 						href="https://community.vuetifyjs.com"
 						target="_blank"
@@ -92,8 +105,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex' // TODO: Testar direto com o this.$store ao inves de mapGetters
-// import axios from 'axios'
 
 export default {
 	name: 'HelloWorld',
@@ -152,12 +163,16 @@ export default {
 	}),
 
 	computed: {
-		...mapGetters({
-			currentList: 'lists/currentList',
-		})
+		currentList() { return this.$store.state.lists.currentList },
+		currentListLoading() { return this.$store.state.lists.loading.currentList }
+		// ou vuex com get e set
+		// currentList: {
+		// 	get () { return this.$store.state.lists.currentList },
+		// 	set (value) { this.$store.commit('lists/SET_CURRENT_LIST', value) }
+		// }
 	},
 	mounted () {
-		this.$store.dispatch('lists/requestGetList', '192910044')
+		// this.$store.dispatch('lists/requestGetList', '192910044')
 	}
 }
 </script>

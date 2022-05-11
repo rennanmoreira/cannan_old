@@ -5,6 +5,26 @@ const services = {
 const getDefaultState = () => ({
 	lists: [],
 	currentList: null,
+	currentMenuIndex: 0,
+	menuOptions: [{
+		spaceName: 'Início',
+		routeName: 'home',
+		spaceId: '',
+		listId: '',
+		icon: 'mdi-home'
+	}, {
+		spaceName: 'Tarefas',
+		routeName: 'tarefa',
+		spaceId: '55020473',
+		listId: '192910044',
+		icon: 'mdi-account'
+	}, {
+		spaceName: 'Trabalho',
+		routeName: 'trabalho',
+		spaceId: '54979629',
+		listId: '187027604',
+		icon: 'mdi-account'
+	}],
 	loading: {
 		lists: false,
 		currentList: false
@@ -12,8 +32,8 @@ const getDefaultState = () => ({
 })
 
 const getters = {
+	currentMenu: (state) => state.menuOptions[state.currentMenuIndex],
 	lists: (state) => state.lists,
-	currentList: (state) => state.currentList
 }
 
 const mutations = {
@@ -23,8 +43,14 @@ const mutations = {
 	SET_LISTS: (state, lists) => {
 		state.lists = lists
 	},
+	ADD_LIST: (state, list) => {
+		state.lists.push(list) // TODO: Verificar se esta salvando e propagando corretamente
+	},
 	SET_CURRENT_LIST: (state, list) => {
 		state.currentList = list
+	},
+	SET_CURRENT_MENU_INDEX: (state, index) => {
+		state.currentMenuIndex = index
 	},
 	START_LOADING: (state, property) => {
 		state.loading[property] = true
