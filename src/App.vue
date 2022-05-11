@@ -105,7 +105,6 @@
 </template>
 
 <script>
-// import { mapGetters } from 'vuex'
 
 export default {
 	name: 'App',
@@ -116,25 +115,17 @@ export default {
 	}),
 	
 	computed: {
-		// ...mapGetters({
-		// 	currentMenu: 'lists/currentMenu'
-		// }),
-
 		menuOptions() { return this.$store.state.lists.menuOptions },
 		currentList() { return this.$store.state.lists.currentList },
 		currentMenu() { return this.$store.getters['lists/currentMenu'] },
 		currentListSpaceName() { return this.currentMenu?.spaceName },
 		currentMenuIndex: {
 			get() { return this.$store.state.lists.currentMenuIndex },
-			async set(value) {
-				console.log('entrou')
-				await this.$store.commit('lists/SET_CURRENT_MENU_INDEX', value)
-
-				if (value) {
-					const listId = this.menuOptions[value].listId
-
-					this.$store.dispatch('lists/requestGetList', listId)
-				}
+			set(value) {
+				this.$store.commit('lists/SET_CURRENT_MENU_INDEX', value)
+				
+				const listId = this.menuOptions[value].listId
+				listId && this.$store.dispatch('lists/requestGetList', listId)
 
 				this.drawer = false
 

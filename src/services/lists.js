@@ -5,4 +5,4 @@ export const getList = listId =>
 	HTTP_PROXY.get(`list/${listId}`)
 
 export const getListTasks = listId =>
-	HTTP_PROXY.get(`list/${listId}/task`)
+	HTTP_PROXY.get(`list/${listId}/task?include_closed=true`)

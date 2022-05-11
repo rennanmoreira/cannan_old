@@ -2,24 +2,10 @@
 	<v-container  class="ml-auto mr-auto">
 		<v-row class="text-center">
 			<v-col cols="12">
-				<v-img
-					:src="require('../assets/logo.png')"
-					class="my-3"
-					contain
-					height="200"
-					:loading="true"
-				/>
-			</v-col>
-
-			<v-col class="mb-4">
-				<h1 class="display-2 font-weight-bold mb-3">
-					Welcome to Vuetify
-				</h1>
-
 				<v-sheet
 					color="grey lighten-4"
 					class="pa-3"
-					v-if="currentListLoading"
+					v-if="currentListTasksLoading"
 				>
 					<v-skeleton-loader
 						class="mx-auto"
@@ -27,78 +13,50 @@
 						type="card"
 					></v-skeleton-loader>
 				</v-sheet>
-
-				<p v-else class="subheading font-weight-regular">
-					{{currentList}}
-					<br>
-					<a
-						href="https://community.vuetifyjs.com"
-						target="_blank"
-					>Discord Community</a>
-				</p>
-			</v-col>
-
-			<v-col
-				class="mb-5"
-				cols="12"
-			>
-				<h2 class="headline font-weight-bold mb-3">
-					What's next?
-				</h2>
-
-				<v-row justify="center">
-					<a
-						v-for="(next, i) in whatsNext"
-						:key="i"
-						:href="next.href"
-						class="subheading mx-3"
-						target="_blank"
+				<v-list two-line>
+					<v-list-item-group
+						v-model="selected"
+						active-class="pink--text"
+						multiple
 					>
-						{{ next.text }}
-					</a>
-				</v-row>
-			</v-col>
+						<template v-for="(item, index) in currentListTasks">
+							<v-list-item :key="item.id">
+								<template v-slot:default="{ active }">
+									<v-list-item-content>
+										<v-list-item-title class="d-flex" v-text="item.name"></v-list-item-title>
 
-			<v-col
-				class="mb-5"
-				cols="12"
-			>
-				<h2 class="headline font-weight-bold mb-3">
-					Important Links
-				</h2>
+										<v-list-item-subtitle class="d-flex text--primary">Status: {{item.status.status}} - Atualiazado em {{item.date_updated_normalized}}</v-list-item-subtitle>
 
-				<v-row justify="center">
-					<a
-						v-for="(link, i) in importantLinks"
-						:key="i"
-						:href="link.href"
-						class="subheading mx-3"
-						target="_blank"
-					>
-						{{ link.text }}
-					</a>
-				</v-row>
-			</v-col>
+										<v-list-item-subtitle v-text="item.description"></v-list-item-subtitle>
+									</v-list-item-content>
 
-			<v-col
-				class="mb-5"
-				cols="12"
-			>
-				<h2 class="headline font-weight-bold mb-3">
-					Ecosystem
-				</h2>
+									<v-list-item-action>
+										<!-- <v-list-item-action-text >Finalizar</v-list-item-action-text> -->
 
-				<v-row justify="center">
-					<a
-						v-for="(eco, i) in ecosystem"
-						:key="i"
-						:href="eco.href"
-						class="subheading mx-3"
-						target="_blank"
-					>
-						{{ eco.text }}
-					</a>
-				</v-row>
+										<v-icon
+											v-if="!active"
+											color="grey lighten-1"
+										>
+											mdi-star-outline
+										</v-icon>
+
+										<v-icon
+											v-else
+											color="yellow darken-3"
+										>
+											mdi-star
+										</v-icon>
+									</v-list-item-action>
+								</template>
+							</v-list-item>
+
+							<v-divider
+								v-if="index < currentListTasks.length - 1"
+								:key="index"
+							></v-divider>
+						</template>
+					</v-list-item-group>
+				</v-list>
 			</v-col>
 		</v-row>
 	</v-container>
@@ -110,69 +68,30 @@ export default {
 	name: 'HelloWorld',
 
 	data: () => ({
-		ecosystem: [
-			{
-				text: 'vuetify-loader',
-				href: 'https://github.com/vuetifyjs/vuetify-loader',
-			},
-			{
-				text: 'github',
-				href: 'https://github.com/vuetifyjs/vuetify',
-			},
-			{
-				text: 'awesome-vuetify',
-				href: 'https://github.com/vuetifyjs/awesome-vuetify',
-			},
-		],
-		importantLinks: [
-			{
-				text: 'Documentation',
-				href: 'https://vuetifyjs.com',
-			},
-			{
-				text: 'Chat',
-				href: 'https://community.vuetifyjs.com',
-			},
-			{
-				text: 'Made with Vuetify',
-				href: 'https://madewithvuejs.com/vuetify',
-			},
-			{
-				text: 'Twitter',
-				href: 'https://twitter.com/vuetifyjs',
-			},
-			{
-				text: 'Articles',
-				href: 'https://medium.com/vuetify',
-			},
-		],
-		whatsNext: [
-			{
-				text: 'Explore components',
-				href: 'https://vuetifyjs.com/components/api-explorer',
-			},
-			{
-				text: 'Select a layout',
-				href: 'https://vuetifyjs.com/getting-started/pre-made-layouts',
-			},
-			{
-				text: 'Frequently Asked Questions',
-				href: 'https://vuetifyjs.com/getting-started/frequently-asked-questions',
-			},
-		],
+		selected: [],
+		timezoneOptions: {
+			year: 'numeric', month: 'numeric', day: 'numeric',
+			hour: 'numeric', minute: 'numeric', second: 'numeric',
+			hour12: false,
+		}
 	}),
 
 	computed: {
 		currentList() { return this.$store.state.lists.currentList },
-		currentListLoading() { return this.$store.state.lists.loading.currentList }
-		// ou vuex com get e set
-		// currentList: {
-		// 	get () { return this.$store.state.lists.currentList },
-		// 	set (value) { this.$store.commit('lists/SET_CURRENT_LIST', value) }
-		// }
+		currentListTasks() {
+			return this.$store.state.lists.currentListTasks.map(i => {
+				i.date_updated_normalized = this.normalizeDatetime(i.date_updated)
+
+				return i
+			})
+		},
+		currentListLoading() { return this.$store.state.lists.loading.currentList },
+		currentListTasksLoading() { return this.$store.state.lists.loading.currentListTasks }
 	},
-	mounted () {
-		// this.$store.dispatch('lists/requestGetList', '192910044')
+	methods: {
+		normalizeDatetime(datetime) {
+			return new Intl.DateTimeFormat('pt-BR', this.timezoneOptions).format(datetime)
+		}
 	}
 }
 </script>

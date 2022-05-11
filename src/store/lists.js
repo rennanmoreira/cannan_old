@@ -1,39 +1,43 @@
+const menuOptions = [{
+	spaceName: 'Início',
+	routeName: 'home',
+	spaceId: '',
+	listId: '',
+	icon: 'mdi-home'
+}, {
+	spaceName: 'Tarefas',
+	routeName: 'tarefa',
+	spaceId: '55020473',
+	listId: '192910044',
+	icon: 'mdi-account'
+}, {
+	spaceName: 'Trabalho',
+	routeName: 'trabalho',
+	spaceId: '54979629',
+	listId: '187027604',
+	icon: 'mdi-account'
+}]
+
 const services = {
-	getList: require('@/services/lists')['getList']
+	getList: require('@/services/lists')['getList'],
+	getListTasks: require('@/services/lists')['getListTasks'],
 }
 
 const getDefaultState = () => ({
 	lists: [],
+	menuOptions,
 	currentList: null,
 	currentMenuIndex: 0,
-	menuOptions: [{
-		spaceName: 'Início',
-		routeName: 'home',
-		spaceId: '',
-		listId: '',
-		icon: 'mdi-home'
-	}, {
-		spaceName: 'Tarefas',
-		routeName: 'tarefa',
-		spaceId: '55020473',
-		listId: '192910044',
-		icon: 'mdi-account'
-	}, {
-		spaceName: 'Trabalho',
-		routeName: 'trabalho',
-		spaceId: '54979629',
-		listId: '187027604',
-		icon: 'mdi-account'
-	}],
+	currentListTasks: [],
 	loading: {
 		lists: false,
-		currentList: false
+		currentList: false,
+		currentListTasks: false
 	}
 })
 
 const getters = {
 	currentMenu: (state) => state.menuOptions[state.currentMenuIndex],
-	lists: (state) => state.lists,
 }
 
 const mutations = {
@@ -49,8 +53,18 @@ const mutations = {
 	SET_CURRENT_LIST: (state, list) => {
 		state.currentList = list
 	},
+	SET_CURRENT_LIST_TASKS: (state, tasks) => {
+		state.currentListTasks = tasks
+	},
+	SET_CURRENT_LIST_TASKS_REQUEST: (state, response) => {
+		state.currentListTasks = response.tasks
+	},
 	SET_CURRENT_MENU_INDEX: (state, index) => {
 		state.currentMenuIndex = index
+	},
+	CLEAN_CURRENT_LIST: (state) => {
+		Object.assign(state.currentList, null)
+		Object.assign(state.currentListTasks, [])
 	},
 	START_LOADING: (state, property) => {
 		state.loading[property] = true
@@ -74,12 +88,21 @@ const actions = {
 			loading && commit('STOP_LOADING', loading)
 		)
 	},
-	requestGetList: ({ dispatch }, listId) => dispatch('serviceRequest', {
-		data: listId,
-		service: 'getList',
-		loading: 'currentList',
-		mutation: 'SET_CURRENT_LIST'
-	})
+	requestGetList: ({ dispatch }, listId) => {
+		dispatch('serviceRequest', {
+			data: listId,
+			service: 'getListTasks',
+			loading: 'currentListTasks',
+			mutation: 'SET_CURRENT_LIST_TASKS_REQUEST'
+		})
+
+		return dispatch('serviceRequest', {
+			data: listId,
+			service: 'getList',
+			loading: 'currentList',
+			mutation: 'SET_CURRENT_LIST'
+		})
+	}
 }
 
 export default {
