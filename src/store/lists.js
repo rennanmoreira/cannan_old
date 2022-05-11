@@ -75,8 +75,9 @@ const mutations = {
 }
 
 const actions = {
-	serviceRequest: ({ commit }, { service, data, mutation, loading = '' }) => {
+	serviceRequest: ({ commit }, { service, data, mutation, loading = '', empty = undefined }) => {
 		loading && commit('START_LOADING', loading)
+		empty !== undefined && commit(mutation, empty)
 
 		return services[service](data).then(res => {
 			commit(mutation, res.data)
@@ -91,6 +92,7 @@ const actions = {
 	requestGetList: ({ dispatch }, listId) => {
 		dispatch('serviceRequest', {
 			data: listId,
+			empty: [],
 			service: 'getListTasks',
 			loading: 'currentListTasks',
 			mutation: 'SET_CURRENT_LIST_TASKS_REQUEST'
@@ -98,6 +100,7 @@ const actions = {
 
 		return dispatch('serviceRequest', {
 			data: listId,
+			empty: null,
 			service: 'getList',
 			loading: 'currentList',
 			mutation: 'SET_CURRENT_LIST'

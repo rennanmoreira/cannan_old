@@ -79,11 +79,12 @@ export default {
 	computed: {
 		currentList() { return this.$store.state.lists.currentList },
 		currentListTasks() {
-			return this.$store.state.lists.currentListTasks.map(i => {
-				i.date_updated_normalized = this.normalizeDatetime(i.date_updated)
+			const currentListTasks = this.$store.state.lists.currentListTasks
+			console.log('teste: ', currentListTasks)
 
-				return i
-			})
+			if (!currentListTasks) return []
+
+			return currentListTasks.map(i => ({ ...i, lastUpdatedDate: this.normalizeDatetime(i.date_updated) }))
 		},
 		currentListLoading() { return this.$store.state.lists.loading.currentList },
 		currentListTasksLoading() { return this.$store.state.lists.loading.currentListTasks }
