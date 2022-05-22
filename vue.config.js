@@ -4,10 +4,10 @@ module.exports = {
 	],
 	pwa: {
 		name: 'Cannan',
-		themeColor: '#525299',
-		msTileColor: '#525299',
+		themeColor: '#1A237E',
+		msTileColor: '#1A237E',
 		manifestOptions: {
-			background_color: '#525299'
+			background_color: '#1A237E'
 		}
 	},
 	devServer: {
