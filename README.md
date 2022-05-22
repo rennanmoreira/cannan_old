@@ -1,5 +1,19 @@
 # cannan
 
+## Code Conventions
+
+Conventions in code that shows the best pratices in this project.
+
+### Development case style
+
+```
+cameCase -> Data, variables and functions in all .vue .js files
+snake_case -> Data(lower case) and mutation(upper case) in vuex files
+
+PascalCase -> We don't use this one yet
+kebab-case -> We don't use this one yet
+```
+
 ## Project setup
 
 ```
