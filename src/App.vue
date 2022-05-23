@@ -23,10 +23,7 @@
 
 			<v-navigation-drawer app v-model="drawer" temporary>
 				<v-list nav dense>
-					<v-list-item-group
-						v-model="currentMenuIndex"
-						active-class="indigo--text text--accent-4"
-					>
+					<v-list-item-group v-model="currentMenuIndex" active-class="indigo--text text--accent-4">
 						<v-list-item v-for="option in menuOptions" :key="option.spaceId">
 							<v-list-item-icon>
 								<v-icon>{{ option.icon }}</v-icon>
