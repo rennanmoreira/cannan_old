@@ -26,28 +26,32 @@ const generalStatus = [
 		status: "backlog",
 		order: 0,
 		color: "#d3d3d3",
-		type: "open"
+		type: "open",
+		name: "Listado"
 	},
 	{
 		// id: "p55020473_pAkDy1IU",
 		status: "working",
 		order: 1,
 		color: "#f9d900",
-		type: "custom"
+		type: "custom",
+		name: "Trabalhando",
 	},
 	{
 		// id: "p55020473_rcH7ZO1e",
 		status: "stopped",
 		order: 2,
 		color: "#02BCD4",
-		type: "custom"
+		type: "custom",
+		name: "Parado",
 	},
 	{
 		// id: "p55020473_0Hdw7jJs",
 		status: "completed",
 		order: 3,
 		color: "#6bc950",
-		type: "closed"
+		type: "closed",
+		name: "Finalizado"
 	}
 ]
 

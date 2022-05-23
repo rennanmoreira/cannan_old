@@ -12,6 +12,32 @@
 			{{ errorMessage }}
 		</v-alert>
 
+		<v-dialog v-model="taskDialog" scrollable max-width="80%">
+			<template v-slot:activator="{ on, attrs }">
+				<v-btn color="primary" dark v-bind="attrs" v-on="on"> Open Dialog </v-btn>
+			</template>
+			<v-card>
+				<v-card-title class="d-flex justify-space-between">
+					<small>{{ currentTask.name }}</small>
+					<v-btn icon @click="taskDialog = false">
+						<v-icon>mdi-close</v-icon>
+					</v-btn>
+				</v-card-title>
+				<v-card-text>
+					<div>Descrição: {{ currentTask.description }}</div>
+					<div>Status: {{ currentTaskStatus }}</div>
+					<br />
+					<div>Criado em: {{ currentTaskDateCreated }}</div>
+					<div>Atualizado em: {{ currentTaskDateUpdated }}</div>
+				</v-card-text>
+				<v-divider></v-divider>
+				<v-card-actions>
+					<v-btn color="blue darken-1" text @click="taskDialog = false"> Fechar </v-btn>
+					<v-btn color="blue darken-1" text @click="taskDialog = false"> Salvar </v-btn>
+				</v-card-actions>
+			</v-card>
+		</v-dialog>
+
 		<v-row class="text-center">
 			<v-col cols="12">
 				<div class="new-item">
@@ -80,7 +106,7 @@
 				<v-list two-line>
 					<v-list-item-group v-model="selected" active-class="pink--text" multiple>
 						<template v-for="(item, index) in currentListTasks">
-							<v-list-item :key="item.id">
+							<v-list-item :key="item.id" @click="openTaskDialog(item)">
 								<template v-slot:default="{ active }">
 									<v-list-item-content>
 										<v-list-item-title class="d-flex" v-text="item.name"></v-list-item-title>
@@ -169,6 +195,15 @@ export default {
 		recognition: null,
 		speechRecognitionList: null,
 		isRecording: false,
+		taskDialog: false,
+		currentTask: {
+			id: '',
+			name: '',
+			description: '',
+			status: '',
+			date_created: '',
+			date_updated: '',
+		},
 		// ################### MAYLON #######################
 		// # Me ajudou no meu momento de vida mais baixo    #
 		// # Ele resolveu meu ponto mais fraco, minha baixa #
@@ -188,6 +223,9 @@ export default {
 		lists() {
 			return this.$store.state.lists
 		},
+		status() {
+			return this.$store.state.lists.status
+		},
 		currentList() {
 			return this.$store.state.lists.currentList
 		},
@@ -200,6 +238,27 @@ export default {
 				...i,
 				lastUpdatedDate: this.normalizeDatetime(i.date_updated),
 			}))
+		},
+		currentTaskStatus() {
+			if (!this.status.length) return '-'
+
+			return this.status.find(i => i.status == this.currentTask.status.status)?.name || '-'
+		},
+		currentTaskDateCreated() {
+			if (!this.currentTask.date_created) return '-'
+
+			const date = new Date(+this.currentTask.date_created)
+			const hour = this.checkZero(date.getHours() + '')
+			const minute = this.checkZero(date.getMinutes() + '')
+			return `${hour}:${minute} ${date.toLocaleDateString('pt-BR', { timeZone: 'UTC' })}`
+		},
+		currentTaskDateUpdated() {
+			if (!this.currentTask.date_updated) return '-'
+
+			const date = new Date(+this.currentTask.date_updated)
+			const hour = this.checkZero(date.getHours() + '')
+			const minute = this.checkZero(date.getMinutes() + '')
+			return `${hour}:${minute} ${date.toLocaleDateString('pt-BR', { timeZone: 'UTC' })}`
 		},
 		currentListLoading() {
 			return this.$store.state.lists.loading.currentList
@@ -215,6 +274,12 @@ export default {
 		// },
 	},
 	methods: {
+		checkZero(data) {
+			if (data.length == 1) {
+				data = '0' + data
+			}
+			return data
+		},
 		normalizeDatetime(datetime) {
 			return new Intl.DateTimeFormat('pt-BR', this.timezoneOptions).format(datetime)
 		},
@@ -269,6 +334,10 @@ export default {
 		},
 		removeCompleted() {
 			// this.todos = filters.active(this.todos)
+		},
+		openTaskDialog(item) {
+			this.taskDialog = true
+			this.currentTask = item
 		},
 		startRecognition() {
 			console.log('Starting')
