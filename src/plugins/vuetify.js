@@ -12,7 +12,7 @@ export default new Vuetify({
 		},
 		themes: {
 			light: {
-				primary: colors.indigo.darken4,
+				primary: colors.indigo.darken4, // #1A237E
 				secondary: '#669BBC',
 				accent: '#3699FC',
 				error: '#DF2935',
@@ -22,7 +22,7 @@ export default new Vuetify({
 				// white: '#FBF5F3'
 			},
 			dark: {
-				primary: colors.indigo.darken4,
+				primary: colors.indigo.darken4, // #1A237E
 				secondary: '#669BBC',
 				accent: '#3699FC',
 				error: '#DF2935',

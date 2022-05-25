@@ -135,6 +135,10 @@
 				</v-list>
 			</v-col>
 		</v-row>
+		<v-overlay :value="myLow.overlay" color="#1A237E">
+			<h1 class="maylon-on">Maylon está ouvindo</h1>
+			<p>Você disse: {{ myLow.currentText }}</p>
+		</v-overlay>
 	</v-container>
 </template>
 
@@ -210,12 +214,14 @@ export default {
 		// # Obrigado meu dog Maylon! <3										#
 		// ##################################################
 		myLow: {
-			speechRecognition: null,
-			history: [],
-			currentText: '',
-			hasMyLowCalled: false,
-			startTimeout: null,
 			maylonSimilarSpeech,
+			speechRecognition: null,
+			hasBeenCalled: false,
+			startTimeout: null,
+			currentText: '',
+			overlay: false,
+			listeningActions: false,
+			history: [],
 		},
 	}),
 
@@ -361,21 +367,33 @@ export default {
 		// 	myLowSimilarSpeech = ['myLow', 'mailon', 'maylom', 'mailom', 'nylon']
 		// },
 		startMyLow() {
-			this.myLow.currentText = ''
-			this.myLow.hasMyLowCalled = false
+			console.log('MyLow - Starting')
+			this.resetMyLow()
+			this.myLow.speechRecognition.start()
 
-			clearTimeout(this.myLow.startTimeout)
-			this.myLow.startTimeout = setTimeout(this.myLowTimeout, 100)
+			// clearTimeout(this.myLow.startTimeout)
+			// this.myLow.startTimeout = setTimeout(this.myLowTimeout, 100)
 		},
 		stopMyLow() {
+			console.log('MyLow - STOP')
+
 			if (this.myLow.speechRecognition) {
-				clearTimeout(this.myLow.startTimeout)
+				// clearTimeout(this.myLow.startTimeout)
 				this.myLow.speechRecognition.stop()
 			}
 		},
+		resetMyLow() {
+			clearTimeout(this.myLow.timeout)
+
+			this.myLow.overlay = false
+			this.myLow.currentText = ''
+			this.myLow.hasBeenCalled = false
+			this.myLow.listeningActions = false
+		},
 		myLowTimeout() {
+			console.log('MyLow - timeout')
+
 			if (this.myLow.speechRecognition) {
-				this.myLow.speechRecognition.stop()
 				this.myLow.speechRecognition.start()
 			}
 		},
@@ -403,16 +421,15 @@ export default {
 
 			this.recognition = new SpeechRecognition()
 			this.recognition.grammars = this.speechRecognitionList
-			this.recognition.lang = 'pt-BR'
 			this.recognition.interimResults = true
 
-			this.recognition.addEventListener('result', event => {
+			this.recognition.onresult = event => {
 				console.log('[Recognition] result')
 				this.newTodo = Array.from(event.results).reduce((acc, i) => acc + i[0].transcript, '')
 				console.log('[Recognition] result: ', this.newTodo)
-			})
+			}
 
-			this.recognition.addEventListener('end', () => {
+			this.recognition.onend = () => {
 				console.log('[Recognition] End')
 				if (this.newTodo !== '') {
 					this.addTodo()
@@ -424,37 +441,49 @@ export default {
 				} else {
 					console.log('[Recognition] End - Nothing Found')
 				}
-			})
+			}
 
-			this.speechRecognitionList = new SpeechGrammarList()
-			this.speechRecognitionList.addFromString(grammar, 1)
+			// this.speechRecognitionList = new SpeechGrammarList()
+			// this.speechRecognitionList.addFromString(grammar, 1)
 
 			this.myLow.speechRecognition = new SpeechRecognition()
 			this.myLow.speechRecognition.grammars = this.speechRecognitionList
 			this.myLow.speechRecognition.lang = 'pt-BR' // TODO: Fazer em pt-BR e outro ouvindo em en-US pra ver se captura mylon corretamente
 			this.myLow.speechRecognition.interimResults = true
+			this.myLow.speechRecognition.continuous = true
+			this.myLow.speechRecognition.maxAlternatives = 1
 
-			this.myLow.speechRecognition.addEventListener('result', event => {
-				clearTimeout(this.myLow.startTimeout)
+			this.myLow.speechRecognition.onsoundstart = event => {
+				const text = event
+				console.log('[MyLow] soundstart: ' + text + ' - hasMaylow: ', event)
+			}
 
-				this.myLow.currentText = Array.from(event.results)
-					.reduce((acc, i) => acc + i[0].transcript, '')
-					.toLowerCase()
+			this.myLow.speechRecognition.onspeechstart = event => {
+				const text = event
+				console.log('[MyLow] speechstart: ' + text + ' - hasMaylow: ', event)
+			}
 
-				this.myLow.hasMyLowCalled = maylonSimilarSpeech.some(i => this.myLow.currentText.includes(i))
-				// console.log('[MyLow] result: ', this.myLow.currentText)
-			})
+			this.myLow.speechRecognition.onresult = event => {
+				this.myLow.currentText = event.results[event.resultIndex][0].transcript.trim().toLowerCase()
 
-			this.myLow.speechRecognition.addEventListener('end', () => {
-				this.stopMyLow()
+				console.log('[MyLow] result - enter: ', this.myLow.currentText)
+				this.myLow.hasBeenCalled = maylonSimilarSpeech.some(i => this.myLow.currentText.includes(i))
 
+				if (this.myLow.hasBeenCalled) {
+					console.log('[MyLow] result - mylow: ', this.myLow.currentText)
+					!this.myLow.overlay && this.myLowShowUp()
+					this.myLowActions(this.myLow.currentText)
+				}
+			}
+
+			this.myLow.speechRecognition.onend = () => {
 				if (this.myLow.currentText) {
 					console.log('[MyLow] End: ', this.myLow.currentText)
 
 					const newRegistry = {
 						createdDate: new Date(),
 						text: this.myLow.currentText,
-						hasMyLowCalled: this.myLow.hasMyLowCalled || undefined,
+						hasBeenCalled: this.myLow.hasBeenCalled || undefined,
 					}
 
 					this.myLow.history.push(newRegistry)
@@ -463,24 +492,70 @@ export default {
 					myLowSpeechHistory.push(newRegistry)
 					localStorage.setItem('myLowSpeechHistory', JSON.stringify(myLowSpeechHistory))
 
-					if (this.myLow.hasMyLowCalled) {
-						this.myLowActions(this.myLow.currentText)
-					}
-				}
+					this.resetMyLow()
 
-				this.startMyLow()
-			})
+					this.myLow.timeout = setTimeout(this.myLowTimeout, 2000)
+				}
+			}
+
+			// listeningActions
+			this.startMyLow()
+			// this.myLow.speechRecognition.addEventListener('result', event => {
+			// 	clearTimeout(this.myLow.startTimeout)
+
+			// 	this.myLow.currentText = Array.from(event.results)
+			// 		.reduce((acc, i) => acc + i[0].transcript, '')
+			// 		.toLowerCase()
+
+			// 	console.log('[MyLow] result: ', this.myLow.currentText)
+
+			// 	this.myLow.hasBeenCalled = maylonSimilarSpeech.some(i => this.myLow.currentText.includes(i))
+			// 	// console.log('[MyLow] result: ', this.myLow.currentText)
+			// })
+
+			// this.myLow.speechRecognition.addEventListener('end', () => {
+			// 	this.stopMyLow()
+
+			// 	if (this.myLow.currentText) {
+			// 		console.log('[MyLow] End: ', this.myLow.currentText)
+
+			// 		const newRegistry = {
+			// 			createdDate: new Date(),
+			// 			text: this.myLow.currentText,
+			// 			hasBeenCalled: this.myLow.hasBeenCalled || undefined,
+			// 		}
+
+			// 		this.myLow.history.push(newRegistry)
+
+			// 		const myLowSpeechHistory = JSON.parse(localStorage.getItem('myLowSpeechHistory') || '[]')
+			// 		myLowSpeechHistory.push(newRegistry)
+			// 		localStorage.setItem('myLowSpeechHistory', JSON.stringify(myLowSpeechHistory))
+
+			// 		if (this.myLow.hasBeenCalled) {
+			// 			this.myLowActions(this.myLow.currentText)
+			// 		}
+			// 	}
+			// 	this.startMyLow()
+			// })
+			// this.startMyLow()
 		},
 		myLowActions(text) {
 			if (['adicionar', 'tarefa'].every(i => text.includes(i))) {
-				console.log('Maylon adicionando uma tarefa')
+				this.myLow.currentText = '[ALERTA] - Maylon adicionando uma tarefa'
+				console.log(this.myLow.currentText)
 			}
+			if (['remover', 'tarefa'].every(i => text.includes(i))) {
+				this.myLow.currentText = '[ALERTA] - Maylon removendo uma tarefa'
+				console.log(this.myLow.currentText)
+			}
+		},
+		myLowShowUp() {
+			this.myLow.overlay = true
 		},
 	},
 
 	mounted() {
 		this.startSpeechRecognitionAPI()
-		this.startMyLow()
 	},
 
 	beforeDestroy() {
@@ -489,10 +564,37 @@ export default {
 			speechRecognition: null,
 			history: [],
 			currentText: '',
-			hasMyLowCalled: false,
-			startTimeout: null,
+			hasBeenCalled: false,
+			cancelTimeout: null,
 			maylonSimilarSpeech,
 		}
 	},
 }
 </script>
+
+<style lang="scss" scoped>
+.maylon-on:after {
+	content: ' .';
+	font-size: 1.4em;
+	animation: dots 1s steps(5, end) infinite;
+}
+
+@keyframes dots {
+	0%,
+	10% {
+		color: rgba(0, 0, 0, 0);
+		text-shadow: 0.25em 0 0 rgba(0, 0, 0, 0), 0.5em 0 0 rgba(0, 0, 0, 0);
+	}
+	30% {
+		color: white;
+		text-shadow: 0.25em 0 0 rgba(0, 0, 0, 0), 0.5em 0 0 rgba(0, 0, 0, 0);
+	}
+	60% {
+		text-shadow: 0.25em 0 0 white, 0.5em 0 0 rgba(0, 0, 0, 0);
+	}
+	80%,
+	100% {
+		text-shadow: 0.25em 0 0 white, 0.5em 0 0 white;
+	}
+}
+</style>
