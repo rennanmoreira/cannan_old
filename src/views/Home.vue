@@ -143,39 +143,6 @@
 </template>
 
 <script>
-const maylonSimilarSpeech = [
-	'maylow',
-	'maylou',
-	'mailou',
-	'maylon',
-	'mailon',
-	'maylom',
-	'mailom',
-	'nylon',
-	'maicon',
-	'maikon',
-	'maillot',
-	'mário',
-	'mario',
-	'milo',
-	'milu',
-	'my low',
-	'mine low',
-	'marlon',
-	'mas vou',
-	// 'mais um',
-	'mais ou',
-	'mais algum',
-	// 'mais uma',
-	'mais na',
-	'maior',
-	'marido',
-	'maiô',
-	'maio',
-	'maria',
-	'marli',
-	'miley',
-]
 
 export default {
 	name: 'Home',
@@ -214,7 +181,7 @@ export default {
 		// # Obrigado meu dog Maylon! <3										#
 		// ##################################################
 		myLow: {
-			maylonSimilarSpeech,
+			maylonSimilarSpeech: [],
 			speechRecognition: null,
 			hasBeenCalled: false,
 			startTimeout: null,
@@ -467,7 +434,7 @@ export default {
 				this.myLow.currentText = event.results[event.resultIndex][0].transcript.trim().toLowerCase()
 
 				console.log('[MyLow] result - enter: ', this.myLow.currentText)
-				this.myLow.hasBeenCalled = maylonSimilarSpeech.some(i => this.myLow.currentText.includes(i))
+				this.myLow.hasBeenCalled = this.myLow.maylonSimilarSpeech.some(i => this.myLow.currentText.includes(i))
 
 				if (this.myLow.hasBeenCalled) {
 					console.log('[MyLow] result - mylow: ', this.myLow.currentText)
@@ -555,7 +522,8 @@ export default {
 	},
 
 	mounted() {
-		this.startSpeechRecognitionAPI()
+		// this.startSpeechRecognitionAPI()	ROLLBACK: disable this line
+		console.log('Home: startTimeout: ', this.startTimeout)
 	},
 
 	beforeDestroy() {
@@ -566,7 +534,7 @@ export default {
 			currentText: '',
 			hasBeenCalled: false,
 			cancelTimeout: null,
-			maylonSimilarSpeech,
+			maylonSimilarSpeech: [],
 		}
 	},
 }

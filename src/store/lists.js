@@ -7,16 +7,64 @@ const menuOptions = [{
 	listId: '',
 	icon: 'mdi-home'
 }, {
-	spaceName: 'Tarefas',
-	routeName: 'tarefa',
-	spaceId: '55020473',
-	listId: '192910044',
-	icon: 'mdi-account'
+	spaceName: 'Cannan',
+	routeName: 'cannan',
+	spaceId: '54979592',
+	listId: '187027411',
+	icon: ''
 }, {
 	spaceName: 'Trabalho',
 	routeName: 'trabalho',
 	spaceId: '54979629',
 	listId: '187027604',
+	icon: 'mdi-account'
+}, {
+	spaceName: 'Vida',
+	routeName: 'life',
+	spaceId: '54979652',
+	listId: '187027714',
+	icon: ''
+}, {
+	spaceName: 'Musica',
+	routeName: 'music',
+	spaceId: '54979654',
+	listId: '187027729',
+	icon: ''
+}, {
+	spaceName: 'Eureka',
+	routeName: 'eureka',
+	spaceId: '54979656',
+	listId: '187027735',
+	icon: ''
+}, {
+	spaceName: 'Casa',
+	routeName: 'casa',
+	spaceId: '49079524',
+	listId: '', // TODO: Tem varias listas (Compras da casa, tarefas gerais e tarefas routineiras)
+	icon: ''
+}, {
+	spaceName: 'Luna',
+	routeName: 'luna',
+	spaceId: '54979662',
+	listId: '187027745',
+	icon: ''
+}, {
+	spaceName: 'Grow',
+	routeName: 'grow',
+	spaceId: '54979665',
+	listId: '187027758',
+	icon: ''
+}, {
+	spaceName: 'Organização Muda',
+	routeName: 'muda',
+	spaceId: '54979681',
+	listId: '187027805',
+	icon: ''
+}, {
+	spaceName: 'Tarefas em geral',
+	routeName: 'general-tasks',
+	spaceId: '55020473',
+	listId: '192910044',
 	icon: 'mdi-account'
 }]
 
